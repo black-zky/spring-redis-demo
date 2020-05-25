@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="redis.clients.jedis.JedisPoolConfig" id="config">
+        <property name="testWhileIdle" value="true"></property>
+        <property name="testOnReturn" value="false"></property>
+        <property name="testOnCreate" value="false"></property>
+        <property name="testOnBorrow" value="false"></property>
+        <property name="maxIdle" value="50"></property>
+        <property name="minIdle" value="10"></property>
+        <property name="maxTotal" value="100"></property>
+    </bean>
+
+    <bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" id="factory"
+          p:hostName="192.168.232.130" p:usePool="true" p:poolConfig-ref="config" p:port="6666" p:password="123456">
+    </bean>
+
+    <bean class="org.springframework.data.redis.core.RedisTemplate" id="template">
+        <property name="connectionFactory" ref="factory"></property>
+
+        <!--key采用String的方式进行序列化，默认情况下采用的JDK底层方式进行序列化-->
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+        </property>
+        <!--value采用json的方式进行序列化-->
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"></bean>
+        </property>
+
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+        </property>
+        <property name="hashValueSerializer">
+            <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"></bean>
+        </property>
+    </bean>
+</beans>
